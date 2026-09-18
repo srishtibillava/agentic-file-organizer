@@ -6,6 +6,9 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_ollama import ChatOllama
 from langgraph.graph import StateGraph, END
 
+# Define base working directory
+BASE_DIR = os.path.join(os.getcwd(), "demo_workspace")
+
 # ==================================================
 # 1. Initialize Local LLM Model
 # ==================================================

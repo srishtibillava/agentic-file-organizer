@@ -42,11 +42,11 @@ Plan Generated:
 
 2. Move file: 'report.pdf' -> 'Projects/Organized/report.pdf'
 
-3. Delete file: 'Projects/temp.txt'
+3. Delete file: 'Projects/temp_draft.txt'
 
 **[INSPECTOR NODE]:** Evaluating risk levels...
 
-⚠️ High-risk action detected: Delete file 'Projects/temp.txt'
+⚠️ High-risk action detected: Delete file 'Projects/temp_draft.txt'
 
 **[HUMAN-IN-THE-LOOP]:** Do you approve high-risk actions? (yes/no): yes
 
@@ -56,6 +56,6 @@ Plan Generated:
 
 - **[SUCCESS]** Moved: report.pdf -> Projects/Organized/report.pdf
 
-- **[SUCCESS]** Deleted: Projects/temp.txt
+- **[SUCCESS]** Deleted: Projects/temp_draft.txt
 
 ✅ **TASK COMPLETE:** All operations executed successfully.
