@@ -2,3 +2,8 @@
 __pycache__/
 *.pyc
 .DS_Store
+
+# Demo workspace rules
+demo_workspace/*
+!demo_workspace/report.pdf
+!demo_workspace/temp_draft.txt
