@@ -83,8 +83,17 @@ def inspector_node(state: OrganizerState):
     return {"needs_approval": requires_approval, "user_approved": approved}
 
 
+# Helper function to ensure operations run strictly inside demo_workspace
+def resolve_path(path_str: str) -> str:
+    if not path_str:
+        return ""
+    if path_str.startswith("demo_workspace"):
+        return os.path.join(os.getcwd(), path_str)
+    return os.path.join(BASE_DIR, path_str)
+
+
 def executor_node(state: OrganizerState):
-    """Performs real file system operations on the local disk using os and shutil."""
+    """Performs real file system operations inside demo_workspace using os and shutil."""
     print("\n--- Stage: executor ---")
     actions = state["proposed_actions"]
     logs = []
@@ -92,30 +101,35 @@ def executor_node(state: OrganizerState):
 
     for act in actions:
         action_type = act["action"]
-        target = act["target"]
-        destination = act["destination"]
+        raw_target = act["target"]
+        raw_destination = act["destination"]
+
+        # Resolve paths safely to demo_workspace
+        target = resolve_path(raw_target)
+        destination = resolve_path(raw_destination)
 
         try:
             if action_type == "create_folder":
                 os.makedirs(target, exist_ok=True)
-                logs.append(f"REAL ACTION: Created folder '{target}'")
+                logs.append(f"REAL ACTION: Created folder '{raw_target}' in demo_workspace")
 
             elif action_type == "move_file":
                 if os.path.exists(target):
-                    shutil.move(target, os.path.join(destination, target))
-                    logs.append(f"REAL ACTION: Moved '{target}' to '{destination}'")
+                    os.makedirs(destination, exist_ok=True)
+                    shutil.move(target, os.path.join(destination, os.path.basename(target)))
+                    logs.append(f"REAL ACTION: Moved '{raw_target}' to '{raw_destination}'")
                 else:
-                    logs.append(f"SKIP: File '{target}' does not exist to move")
+                    logs.append(f"SKIP: File '{raw_target}' does not exist to move")
 
             elif action_type == "delete_file":
                 if not state["user_approved"]:
-                    logs.append(f"FAILED: Unauthorized attempt to delete '{target}'")
+                    logs.append(f"FAILED: Unauthorized attempt to delete '{raw_target}'")
                     has_errors = True
                 elif os.path.exists(target):
                     os.remove(target)
-                    logs.append(f"REAL ACTION: Deleted file '{target}'")
+                    logs.append(f"REAL ACTION: Deleted file '{raw_target}'")
                 else:
-                    logs.append(f"SKIP: File '{target}' does not exist to delete")
+                    logs.append(f"SKIP: File '{raw_target}' does not exist to delete")
 
         except Exception as e:
             logs.append(f"ERROR on {action_type}: {str(e)}")
@@ -181,7 +195,30 @@ app = builder.compile()
 # ==================================================
 # 6. Run Application
 # ==================================================
+
+# Helper to reset demo_workspace so the program can be run N times seamlessly
+def setup_demo_environment():
+    """Cleans and re-initializes demo_workspace/ for repeatable test runs."""
+    os.makedirs(BASE_DIR, exist_ok=True)
+    
+    # Remove existing subdirectories (like Projects/) to start fresh
+    for item in os.listdir(BASE_DIR):
+        item_path = os.path.join(BASE_DIR, item)
+        if os.path.isdir(item_path):
+            shutil.rmtree(item_path)
+        elif item not in ["report.pdf", "temp_draft.txt"]:
+            os.remove(item_path)
+            
+    # Ensure starting test files exist inside demo_workspace
+    for file_name in ["report.pdf", "temp_draft.txt"]:
+        file_path = os.path.join(BASE_DIR, file_name)
+        if not os.path.exists(file_path):
+            with open(file_path, "w") as f:
+                f.write(f"Sample content for {file_name}")
+
 if __name__ == "__main__":
+    setup_demo_environment()  # Automatically resets demo_workspace on every run!
+    
     prompt = "Create a 'Projects' folder, move 'report.pdf' into it, and delete 'temp_draft.txt'"
     print(f"User Request: {prompt}")
     print("=" * 50)
