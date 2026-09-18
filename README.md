@@ -19,3 +19,26 @@ An autonomous, local file management agent built with **LangGraph** and **Ollama
                                           │                 │
                                           ▼                 ▼
                                    [ User Prompt ]   [ Self-Heal ]
+
+==================================================
+🤖 AGENT INITIALIZED: File Management System
+==================================================
+
+[PLANNER NODE]: Generating dynamic action sequence...
+Plan Generated:
+1. Create directory: 'Projects/Organized'
+2. Move file: 'report.pdf' -> 'Projects/Organized/report.pdf'
+3. Delete file: 'Projects/temp.txt'
+
+[INSPECTOR NODE]: Evaluating risk levels...
+⚠️ High-risk action detected: Delete file 'Projects/temp.txt'
+[HUMAN-IN-THE-LOOP]: Do you approve high-risk actions? (yes/no): yes
+
+[EXECUTOR NODE]: Executing planned operations...
+- [SUCCESS] Created folder: Projects/Organized
+- [SUCCESS] Moved: report.pdf -> Projects/Organized/report.pdf
+- [SUCCESS] Deleted: Projects/temp.txt
+
+==================================================
+✅ TASK COMPLETE: All operations executed successfully.
+==================================================
