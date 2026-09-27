@@ -1,4 +1,4 @@
-=# Agentic File Organizer
+# **Agentic File Organizer**
 
 An autonomous, local file management agent built with **LangGraph and Ollama (Qwen 2.5)**. It translates natural language requests into real system actions, enforces **human-in-the-loop safety for high-risk operations**, and self-heals when actions fail.
 
